@@ -14,6 +14,7 @@
 package com.unitvectory.devicekeyregistry.mapper;
 
 import java.util.List;
+import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 import com.unitvectory.devicekeyregistry.model.DeviceRecord;
@@ -24,6 +25,7 @@ import com.unitvectory.devicekeyregistry.model.DeviceResponse;
  * 
  * @author Jared Hatfield (UnitVectorY Labs)
  */
+@Mapper
 public interface DeviceRecordMapper {
 
     DeviceRecordMapper INSTANCE = Mappers.getMapper(DeviceRecordMapper.class);
