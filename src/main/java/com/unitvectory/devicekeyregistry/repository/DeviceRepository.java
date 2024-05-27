@@ -25,7 +25,7 @@ import reactor.core.publisher.Mono;
  */
 public interface DeviceRepository {
 
-    Mono<DeviceRecord> save(DeviceRecord record);
+    <S extends DeviceRecord> Mono<S> save(S record);
 
     Mono<DeviceRecord> findById(String id);
 
