@@ -11,25 +11,25 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.unitvectory.devicekeyregistry.model;
+package com.unitvectory.devicekeyregistry.config;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import java.util.List;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import com.unitvectory.jsonschema4springboot.ValidateJsonSchemaArgumentResolver;
+import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 
 /**
- * The devices response.
+ * The JSON validation configuration.
  * 
  * @author Jared Hatfield (UnitVectorY Labs)
  */
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class DevicesResponse {
+@Configuration
+public class JsonValidationConfiguration implements WebMvcConfigurer {
 
-    private List<DeviceResponse> devices;
-
+    @Override
+    public void addArgumentResolvers(
+            @SuppressWarnings("null") List<HandlerMethodArgumentResolver> resolvers) {
+        resolvers.add(ValidateJsonSchemaArgumentResolver.newInstance());
+    }
 }

@@ -13,7 +13,10 @@
  */
 package com.unitvectory.devicekeyregistry.service;
 
+import java.util.List;
 import org.springframework.stereotype.Service;
+import com.unitvectory.devicekeyregistry.model.DeviceRecord;
+import com.unitvectory.devicekeyregistry.model.DeviceRequest;
 
 /**
  * The device service.
@@ -23,4 +26,33 @@ import org.springframework.stereotype.Service;
 @Service
 public class DeviceService {
 
+    public DeviceRecord registerDevice(DeviceRequest request) {
+        // TODO: Implement this method
+        return null;
+    }
+
+    public DeviceRecord activateDevice(String deviceId) {
+        // TODO: Implement this method
+        return null;
+    }
+
+    public DeviceRecord deactivateDevice(String deviceId) {
+        // TODO: Implement this method
+        return null;
+    }
+
+    public DeviceRecord getDevice(String deviceId) {
+        // TODO: Implement this method
+        return null;
+    }
+
+    public List<DeviceRecord> getDeviceAliases(String deviceAlias) {
+        // TODO: Implement this method
+        return null;
+    }
+
+    public List<DeviceRecord> getPendingDevices() {
+        // TODO: Implement this method
+        return null;
+    }
 }

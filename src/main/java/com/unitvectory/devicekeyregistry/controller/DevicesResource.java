@@ -13,8 +13,14 @@
  */
 package com.unitvectory.devicekeyregistry.controller;
 
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
+import com.unitvectory.devicekeyregistry.mapper.DeviceRecordMapper;
+import com.unitvectory.devicekeyregistry.model.DeviceRequest;
+import com.unitvectory.devicekeyregistry.model.DeviceResponse;
 import com.unitvectory.devicekeyregistry.service.DeviceService;
+import com.unitvectory.jsonschema4springboot.ValidateJsonSchema;
+import com.unitvectory.jsonschema4springboot.ValidateJsonSchemaVersion;
 import lombok.AllArgsConstructor;
 
 /**
@@ -28,5 +34,9 @@ public class DevicesResource {
 
     private DeviceService deviceService;
 
-
+    @PostMapping("/v1/device")
+    public DeviceResponse registerDevice(@ValidateJsonSchema(version = ValidateJsonSchemaVersion.V7,
+            schemaPath = "classpath:schema/postDevice.json") DeviceRequest request) {
+        return DeviceRecordMapper.INSTANCE.toDeviceResponse(deviceService.registerDevice(request));
+    }
 }

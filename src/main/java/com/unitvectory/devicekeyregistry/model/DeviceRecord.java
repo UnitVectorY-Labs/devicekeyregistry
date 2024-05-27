@@ -13,23 +13,26 @@
  */
 package com.unitvectory.devicekeyregistry.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import java.util.List;
 
 /**
- * The devices response.
+ * The device response.
  * 
  * @author Jared Hatfield (UnitVectorY Labs)
  */
 @Data
-@Builder
 @NoArgsConstructor
-@AllArgsConstructor
-public class DevicesResponse {
+public class DeviceRecord {
 
-    private List<DeviceResponse> devices;
+    private String deviceId;
+
+    private DeviceStatus status;
+
+    private String deviceAlias;
+
+    private KeyType keyType;
+
+    private String publicKey;
 
 }

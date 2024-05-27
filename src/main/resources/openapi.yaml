@@ -12,46 +12,21 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                deviceAlias:
-                  type: string
-                  description: The ID of the device self-reported
-                keyType:
-                  type: string
-                  description: Type of key supported
-                  enum: [RS256]
-                publicKey:
-                  type: string
-                  description: Public key of the device
+              $ref: "#/components/schemas/DeviceRequest"
       responses:
         200:
           description: Device registered successfully
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  deviceId:
-                    type: string
-                    format: uuid
-                  status:
-                    type: string
-                    enum: [PENDING, ACTIVE, INACTIVE]
-                  deviceAlias:
-                    type: string
-                  keyType:
-                    type: string
-                    enum: [RS256]
-                  publicKey:
-                    type: string
+                $ref: "#/components/schemas/DeviceResponse"
 
-  /v1/device/{UUID}:
+  /v1/device/{deviceId}:
     get:
-      summary: Get device information by UUID
+      summary: Get device information by deviceId
       parameters:
         - in: path
-          name: UUID
+          name: deviceId
           required: true
           schema:
             type: string
@@ -62,28 +37,14 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  deviceId:
-                    type: string
-                    format: uuid
-                  status:
-                    type: string
-                    enum: [PENDING, ACTIVE, INACTIVE]
-                  deviceAlias:
-                    type: string
-                  keyType:
-                    type: string
-                    enum: [RS256]
-                  publicKey:
-                    type: string
+                $ref: "#/components/schemas/DeviceResponse"
 
-  /v1/alias/{alias}:
+  /v1/alias/{deviceAlias}:
     get:
-      summary: Get devices by alias
+      summary: Get devices by deviceAlias
       parameters:
         - in: path
-          name: alias
+          name: deviceAlias
           required: true
           schema:
             type: string
@@ -93,26 +54,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  devices:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        deviceId:
-                          type: string
-                          format: uuid
-                        status:
-                          type: string
-                          enum: [PENDING, ACTIVE, INACTIVE]
-                        deviceAlias:
-                          type: string
-                        keyType:
-                          type: string
-                          enum: [RS256]
-                        publicKey:
-                          type: string
+                $ref: "#/components/schemas/DevicesResponse"
 
   /v1/pending:
     get:
@@ -123,51 +65,108 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  devices:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        deviceId:
-                          type: string
-                          format: uuid
-                        status:
-                          type: string
-                          enum: [PENDING, ACTIVE, INACTIVE]
-                        deviceAlias:
-                          type: string
-                        keyType:
-                          type: string
-                          enum: [RS256]
-                        publicKey:
-                          type: string
+                $ref: "#/components/schemas/DevicesResponse"
 
-  /v1/devices/{uuid}/activate:
+  /v1/device/{deviceId}/activate:
     put:
       summary: Activate a device
       parameters:
         - in: path
-          name: uuid
+          name: deviceId
           required: true
           schema:
             type: string
             format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
       responses:
         200:
           description: Device activated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeviceResponse"
 
-  /v1/devices/{uuid}/deactivate:
+  /v1/device/{deviceId}/deactivate:
     put:
       summary: Deactivate a device
       parameters:
         - in: path
-          name: uuid
+          name: deviceId
           required: true
           schema:
             type: string
             format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
       responses:
         200:
           description: Device deactivated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeviceResponse"
+
+components:
+  schemas:
+    DeviceRequest:
+      type: object
+      properties:
+        deviceAlias:
+          type: string
+          description: The ID of the device self-reported
+        keyType:
+          type: string
+          description: Type of key supported
+          enum: [RS256]
+        publicKey:
+          type: string
+          description: Public key of the device
+      required:
+        - deviceAlias
+        - keyType
+        - publicKey
+      additionalProperties: false
+
+    DeviceResponse:
+      type: object
+      properties:
+        deviceId:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [PENDING, ACTIVE, INACTIVE]
+        deviceAlias:
+          type: string
+        keyType:
+          type: string
+          enum: [RS256]
+        publicKey:
+          type: string
+      required:
+        - deviceId
+        - status
+        - deviceAlias
+        - keyType
+        - publicKey
+      additionalProperties: false
+
+    DevicesResponse:
+      type: object
+      properties:
+        devices:
+          type: array
+          items:
+            $ref: "#/components/schemas/DeviceResponse"
+      additionalProperties: false
