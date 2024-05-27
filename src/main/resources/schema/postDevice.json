@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "deviceAlias": {
+      "type": "string",
+      "description": "The ID of the device self-reported"
+    },
+    "keyType": {
+      "type": "string",
+      "description": "Type of key supported",
+      "enum": ["RS256"]
+    },
+    "publicKey": {
+      "type": "string",
+      "description": "Public key of the device"
+    }
+  },
+  "required": ["deviceAlias", "keyType", "publicKey"],
+  "additionalProperties": false
+}

@@ -1,0 +1,173 @@
+openapi: 3.0.0
+info:
+  title: DeviceKeyRegistry API
+  description: API for securely registering, approving, disabling, and validating device public keys using JWTs and JWKS URLs.
+  version: 1.0.0
+paths:
+  /v1/device:
+    post:
+      summary: Register a new device
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                deviceAlias:
+                  type: string
+                  description: The ID of the device self-reported
+                keyType:
+                  type: string
+                  description: Type of key supported
+                  enum: [RS256]
+                publicKey:
+                  type: string
+                  description: Public key of the device
+      responses:
+        200:
+          description: Device registered successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  deviceId:
+                    type: string
+                    format: uuid
+                  status:
+                    type: string
+                    enum: [PENDING, ACTIVE, INACTIVE]
+                  deviceAlias:
+                    type: string
+                  keyType:
+                    type: string
+                    enum: [RS256]
+                  publicKey:
+                    type: string
+
+  /v1/device/{UUID}:
+    get:
+      summary: Get device information by UUID
+      parameters:
+        - in: path
+          name: UUID
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        200:
+          description: Device information retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  deviceId:
+                    type: string
+                    format: uuid
+                  status:
+                    type: string
+                    enum: [PENDING, ACTIVE, INACTIVE]
+                  deviceAlias:
+                    type: string
+                  keyType:
+                    type: string
+                    enum: [RS256]
+                  publicKey:
+                    type: string
+
+  /v1/alias/{alias}:
+    get:
+      summary: Get devices by alias
+      parameters:
+        - in: path
+          name: alias
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Devices retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  devices:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        deviceId:
+                          type: string
+                          format: uuid
+                        status:
+                          type: string
+                          enum: [PENDING, ACTIVE, INACTIVE]
+                        deviceAlias:
+                          type: string
+                        keyType:
+                          type: string
+                          enum: [RS256]
+                        publicKey:
+                          type: string
+
+  /v1/pending:
+    get:
+      summary: Get all pending devices
+      responses:
+        200:
+          description: Pending devices retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  devices:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        deviceId:
+                          type: string
+                          format: uuid
+                        status:
+                          type: string
+                          enum: [PENDING, ACTIVE, INACTIVE]
+                        deviceAlias:
+                          type: string
+                        keyType:
+                          type: string
+                          enum: [RS256]
+                        publicKey:
+                          type: string
+
+  /v1/devices/{uuid}/activate:
+    put:
+      summary: Activate a device
+      parameters:
+        - in: path
+          name: uuid
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        200:
+          description: Device activated successfully
+
+  /v1/devices/{uuid}/deactivate:
+    put:
+      summary: Deactivate a device
+      parameters:
+        - in: path
+          name: uuid
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        200:
+          description: Device deactivated successfully
