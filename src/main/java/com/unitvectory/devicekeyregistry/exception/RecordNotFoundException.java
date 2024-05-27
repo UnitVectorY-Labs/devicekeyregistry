@@ -11,25 +11,16 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.unitvectory.devicekeyregistry.repository;
+package com.unitvectory.devicekeyregistry.exception;
 
-import com.unitvectory.devicekeyregistry.model.DeviceRecord;
-import com.unitvectory.devicekeyregistry.model.DeviceStatus;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
+import lombok.experimental.StandardException;
 
 /**
- * The device repository.
+ * The record not found exception.
  * 
  * @author Jared Hatfield (UnitVectorY Labs)
  */
-public interface DeviceRepository {
+@StandardException
+public class RecordNotFoundException extends RuntimeException {
 
-    Mono<DeviceRecord> save(DeviceRecord record);
-
-    Mono<DeviceRecord> findById(String id);
-
-    Flux<DeviceRecord> findByDeviceAlias(String deviceAlias);
-
-    Flux<DeviceRecord> findByStatus(DeviceStatus status);
 }

@@ -13,15 +13,14 @@
  */
 package com.unitvectory.devicekeyregistry.controller;
 
-import java.util.List;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.unitvectory.devicekeyregistry.mapper.DeviceRecordMapper;
-import com.unitvectory.devicekeyregistry.model.DeviceRecord;
 import com.unitvectory.devicekeyregistry.model.DevicesResponse;
 import com.unitvectory.devicekeyregistry.service.DeviceService;
 import lombok.AllArgsConstructor;
+import reactor.core.publisher.Mono;
 
 /**
  * The device alias resource.
@@ -32,12 +31,15 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class DeviceAliasResource {
 
+    private final DeviceRecordMapper deviceRecordMapper = DeviceRecordMapper.INSTANCE;
+
     private DeviceService deviceService;
 
     @GetMapping("/v1/alias/{deviceAlias}")
-    public DevicesResponse getDeviceAlias(@RequestParam("deviceAlias") String deviceAlias) {
-        List<DeviceRecord> records = this.deviceService.getDeviceAliases(deviceAlias);
-        return DevicesResponse.builder()
-                .devices(DeviceRecordMapper.INSTANCE.toDeviceResponseList(records)).build();
+    public Mono<DevicesResponse> getDeviceAlias(@RequestParam("deviceAlias") String deviceAlias) {
+        return deviceService.getDeviceAliases(deviceAlias).collectList()
+                .map(deviceRecordMapper::toDeviceResponseList)
+                .map(DeviceResponseList -> DevicesResponse.builder().devices(DeviceResponseList)
+                        .build());
     }
 }

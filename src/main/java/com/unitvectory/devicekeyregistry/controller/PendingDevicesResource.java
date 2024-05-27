@@ -13,14 +13,13 @@
  */
 package com.unitvectory.devicekeyregistry.controller;
 
-import java.util.List;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.unitvectory.devicekeyregistry.mapper.DeviceRecordMapper;
-import com.unitvectory.devicekeyregistry.model.DeviceRecord;
 import com.unitvectory.devicekeyregistry.model.DevicesResponse;
 import com.unitvectory.devicekeyregistry.service.DeviceService;
 import lombok.AllArgsConstructor;
+import reactor.core.publisher.Mono;
 
 /**
  * The pending devices resource.
@@ -34,10 +33,9 @@ public class PendingDevicesResource {
     private DeviceService deviceService;
 
     @GetMapping("/v1/pending")
-    public DevicesResponse getPendingDevices() {
-        List<DeviceRecord> records = this.deviceService.getPendingDevices();
-        return DevicesResponse.builder()
-                .devices(DeviceRecordMapper.INSTANCE.toDeviceResponseList(records)).build();
+    public Mono<DevicesResponse> getPendingDevices() {
+        return deviceService.getPendingDevices().collectList()
+                .map(DeviceRecordMapper.INSTANCE::toDeviceResponseList)
+                .map(devices -> DevicesResponse.builder().devices(devices).build());
     }
 }
-

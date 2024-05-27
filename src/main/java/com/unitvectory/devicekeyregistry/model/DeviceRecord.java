@@ -13,6 +13,10 @@
  */
 package com.unitvectory.devicekeyregistry.model;
 
+import com.google.cloud.firestore.annotation.DocumentId;
+import com.google.cloud.spring.data.firestore.Document;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -22,9 +26,13 @@ import lombok.NoArgsConstructor;
  * @author Jared Hatfield (UnitVectorY Labs)
  */
 @Data
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
+@Document(collectionName = "registry")
 public class DeviceRecord {
 
+    @DocumentId
     private String deviceId;
 
     private DeviceStatus status;

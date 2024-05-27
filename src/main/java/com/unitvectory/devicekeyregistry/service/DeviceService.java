@@ -13,46 +13,69 @@
  */
 package com.unitvectory.devicekeyregistry.service;
 
-import java.util.List;
 import org.springframework.stereotype.Service;
+import com.unitvectory.devicekeyregistry.exception.RecordNotFoundException;
 import com.unitvectory.devicekeyregistry.model.DeviceRecord;
-import com.unitvectory.devicekeyregistry.model.DeviceRequest;
+import com.unitvectory.devicekeyregistry.model.DeviceStatus;
+import com.unitvectory.devicekeyregistry.model.KeyType;
+import com.unitvectory.devicekeyregistry.repository.DeviceRepository;
+import lombok.AllArgsConstructor;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 /**
  * The device service.
  * 
  * @author Jared Hatfield (UnitVectorY Labs)
  */
+@AllArgsConstructor
 @Service
 public class DeviceService {
 
-    public DeviceRecord registerDevice(DeviceRequest request) {
-        // TODO: Implement this method
-        return null;
+    private DeviceRepository deviceRepository;
+
+    private EntropyService entropyService;
+
+    public Mono<DeviceRecord> registerDevice(String deviceAlias, KeyType keyType,
+            String publicKey) {
+        return Mono.just(DeviceRecord.builder().deviceId(entropyService.newDeviceId())
+                .status(DeviceStatus.PENDING).deviceAlias(deviceAlias).keyType(keyType)
+                .publicKey(publicKey).build()).flatMap(deviceRepository::save);
     }
 
-    public DeviceRecord activateDevice(String deviceId) {
-        // TODO: Implement this method
-        return null;
+    public Mono<DeviceRecord> activateDevice(String deviceId) {
+        return getDevice(deviceId).flatMap(device -> {
+            device.setStatus(DeviceStatus.ACTIVE);
+            return deviceRepository.save(device);
+        });
     }
 
-    public DeviceRecord deactivateDevice(String deviceId) {
-        // TODO: Implement this method
-        return null;
+    public Mono<DeviceRecord> deactivateDevice(String deviceId) {
+        return getDevice(deviceId).flatMap(device -> {
+            device.setStatus(DeviceStatus.INACTIVE);
+            return deviceRepository.save(device);
+        });
     }
 
-    public DeviceRecord getDevice(String deviceId) {
-        // TODO: Implement this method
-        return null;
+    public Mono<DeviceRecord> getDevice(String deviceId) {
+        if (deviceId == null) {
+            return Mono.error(new IllegalArgumentException("Device ID cannot be null"));
+        }
+
+        return this.deviceRepository.findById(deviceId)
+                .switchIfEmpty(Mono.error(new RecordNotFoundException("Device record not found")))
+                .onErrorMap(RecordNotFoundException.class, e -> e);
     }
 
-    public List<DeviceRecord> getDeviceAliases(String deviceAlias) {
-        // TODO: Implement this method
-        return null;
+    public Flux<DeviceRecord> getDeviceAliases(String deviceAlias) {
+        if (deviceAlias == null) {
+            return Flux.error(new IllegalArgumentException("Device alias cannot be null"));
+        }
+
+        return this.deviceRepository.findByDeviceAlias(deviceAlias);
     }
 
-    public List<DeviceRecord> getPendingDevices() {
-        // TODO: Implement this method
-        return null;
+    public Flux<DeviceRecord> getPendingDevices() {
+        return deviceRepository.findByStatus(DeviceStatus.PENDING);
     }
 }

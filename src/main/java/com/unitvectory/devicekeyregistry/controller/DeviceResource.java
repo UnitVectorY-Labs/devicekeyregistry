@@ -24,6 +24,7 @@ import com.unitvectory.devicekeyregistry.service.DeviceService;
 import com.unitvectory.jsonschema4springboot.ValidateJsonSchema;
 import com.unitvectory.jsonschema4springboot.ValidateJsonSchemaVersion;
 import lombok.AllArgsConstructor;
+import reactor.core.publisher.Mono;
 
 /**
  * The device alias resource.
@@ -34,25 +35,26 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class DeviceResource {
 
+    private final DeviceRecordMapper deviceRecordMapper = DeviceRecordMapper.INSTANCE;
+
     private DeviceService deviceService;
 
     @GetMapping("/v1/device/{deviceId}")
-    public DeviceResponse getDevice(@RequestParam("deviceId") String deviceId) {
-        return DeviceRecordMapper.INSTANCE.toDeviceResponse(deviceService.getDevice(deviceId));
+    public Mono<DeviceResponse> getDevice(@RequestParam("deviceId") String deviceId) {
+        return deviceService.getDevice(deviceId).map(deviceRecordMapper::toDeviceResponse);
     }
 
     @PutMapping("/v1/device/{deviceId}/activate")
-    public DeviceResponse activateDevice(@RequestParam("deviceAlias") String deviceId,
+    public Mono<DeviceResponse> activateDevice(@RequestParam("deviceId") String deviceId,
             @ValidateJsonSchema(version = ValidateJsonSchemaVersion.V7,
                     schemaPath = "classpath:schema/activateDevice.json") ActivateRequest request) {
-        return DeviceRecordMapper.INSTANCE.toDeviceResponse(deviceService.activateDevice(deviceId));
+        return deviceService.activateDevice(deviceId).map(deviceRecordMapper::toDeviceResponse);
     }
 
     @PutMapping("/v1/device/{deviceId}/deactivate")
-    public DeviceResponse deactivateDevice(@RequestParam("deviceAlias") String deviceId,
+    public Mono<DeviceResponse> deactivateDevice(@RequestParam("deviceId") String deviceId,
             @ValidateJsonSchema(version = ValidateJsonSchemaVersion.V7,
                     schemaPath = "classpath:schema/deactivateDevice.json") ActivateRequest request) {
-        return DeviceRecordMapper.INSTANCE
-                .toDeviceResponse(deviceService.deactivateDevice(deviceId));
+        return deviceService.deactivateDevice(deviceId).map(deviceRecordMapper::toDeviceResponse);
     }
 }
