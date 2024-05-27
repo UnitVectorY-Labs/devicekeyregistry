@@ -13,8 +13,9 @@
  */
 package com.unitvectory.devicekeyregistry.controller;
 
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import com.unitvectory.devicekeyregistry.mapper.DeviceRecordMapper;
 import com.unitvectory.devicekeyregistry.model.DevicesResponse;
@@ -35,8 +36,8 @@ public class DeviceAliasResource {
 
     private DeviceService deviceService;
 
-    @GetMapping("/v1/alias/{deviceAlias}")
-    public Mono<DevicesResponse> getDeviceAlias(@RequestParam("deviceAlias") String deviceAlias) {
+    @GetMapping(path = "/v1/alias/{deviceAlias}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Mono<DevicesResponse> getDeviceAlias(@PathVariable("deviceAlias") String deviceAlias) {
         return deviceService.getDeviceAliases(deviceAlias).collectList()
                 .map(deviceRecordMapper::toDeviceResponseList)
                 .map(DeviceResponseList -> DevicesResponse.builder().devices(DeviceResponseList)

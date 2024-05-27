@@ -44,17 +44,23 @@ public class DeviceService {
     }
 
     public Mono<DeviceRecord> activateDevice(String deviceId) {
-        return getDevice(deviceId).flatMap(device -> {
-            device.setStatus(DeviceStatus.ACTIVE);
-            return deviceRepository.save(device);
-        });
+        return getDevice(deviceId)
+                .switchIfEmpty(Mono.error(
+                        new RecordNotFoundException("Device with ID " + deviceId + " not found")))
+                .flatMap(device -> {
+                    device.setStatus(DeviceStatus.ACTIVE);
+                    return deviceRepository.save(device);
+                });
     }
 
     public Mono<DeviceRecord> deactivateDevice(String deviceId) {
-        return getDevice(deviceId).flatMap(device -> {
-            device.setStatus(DeviceStatus.INACTIVE);
-            return deviceRepository.save(device);
-        });
+        return getDevice(deviceId)
+                .switchIfEmpty(Mono.error(
+                        new RecordNotFoundException("Device with ID " + deviceId + " not found")))
+                .flatMap(device -> {
+                    device.setStatus(DeviceStatus.INACTIVE);
+                    return deviceRepository.save(device);
+                });
     }
 
     public Mono<DeviceRecord> getDevice(String deviceId) {

@@ -13,6 +13,7 @@
  */
 package com.unitvectory.devicekeyregistry.controller;
 
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.unitvectory.devicekeyregistry.mapper.DeviceRecordMapper;
@@ -32,7 +33,7 @@ public class PendingDevicesResource {
 
     private DeviceService deviceService;
 
-    @GetMapping("/v1/pending")
+    @GetMapping(path = "/v1/pending", produces = MediaType.APPLICATION_JSON_VALUE)
     public Mono<DevicesResponse> getPendingDevices() {
         return deviceService.getPendingDevices().collectList()
                 .map(DeviceRecordMapper.INSTANCE::toDeviceResponseList)

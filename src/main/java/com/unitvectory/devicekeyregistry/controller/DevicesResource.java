@@ -13,8 +13,8 @@
  */
 package com.unitvectory.devicekeyregistry.controller;
 
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import com.unitvectory.devicekeyregistry.mapper.DeviceRecordMapper;
 import com.unitvectory.devicekeyregistry.model.DeviceRequest;
@@ -34,15 +34,18 @@ import reactor.core.publisher.Mono;
 @AllArgsConstructor
 public class DevicesResource {
 
-    private final DeviceRecordMapper deviceRecordMapper = DeviceRecordMapper.INSTANCE;
+        private final DeviceRecordMapper deviceRecordMapper = DeviceRecordMapper.INSTANCE;
 
-    private DeviceService deviceService;
+        private DeviceService deviceService;
 
-    @PostMapping("/v1/device")
-    public Mono<DeviceResponse> registerDevice(@ValidateJsonSchema(
-            version = ValidateJsonSchemaVersion.V7,
-            schemaPath = "classpath:schema/postDevice.json") @RequestBody DeviceRequest request) {
-        return deviceService.registerDevice(request.getDeviceAlias(), request.getKeyType(),
-                request.getPublicKey()).map(deviceRecordMapper::toDeviceResponse);
-    }
+        @PostMapping(path = "/v1/device", consumes = MediaType.APPLICATION_JSON_VALUE,
+                        produces = MediaType.APPLICATION_JSON_VALUE)
+        public Mono<DeviceResponse> registerDevice(@ValidateJsonSchema(
+                        version = ValidateJsonSchemaVersion.V7,
+                        schemaPath = "classpath:schema/postDevice.json") DeviceRequest request) {
+                return deviceService
+                                .registerDevice(request.getDeviceAlias(), request.getKeyType(),
+                                                request.getPublicKey())
+                                .map(deviceRecordMapper::toDeviceResponse);
+        }
 }
