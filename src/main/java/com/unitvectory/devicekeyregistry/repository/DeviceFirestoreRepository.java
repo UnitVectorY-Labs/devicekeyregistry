@@ -10,7 +10,9 @@ import reactor.core.publisher.Flux;
 public interface DeviceFirestoreRepository
         extends DeviceRepository, FirestoreReactiveRepository<DeviceRecord> {
 
+    @Override
     Flux<DeviceRecord> findByDeviceAlias(String deviceAlias);
 
+    @Override
     Flux<DeviceRecord> findByStatus(DeviceStatus status);
 }

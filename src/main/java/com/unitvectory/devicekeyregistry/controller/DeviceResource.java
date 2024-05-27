@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.unitvectory.devicekeyregistry.mapper.DeviceRecordMapper;
 import com.unitvectory.devicekeyregistry.model.ActivateRequest;
+import com.unitvectory.devicekeyregistry.model.DeactivateRequest;
 import com.unitvectory.devicekeyregistry.model.DeviceResponse;
 import com.unitvectory.devicekeyregistry.service.DeviceService;
 import com.unitvectory.jsonschema4springboot.ValidateJsonSchema;
@@ -51,7 +52,7 @@ public class DeviceResource {
         public Mono<DeviceResponse> activateDevice(@PathVariable("deviceId") String deviceId,
                         @ValidateJsonSchema(version = ValidateJsonSchemaVersion.V7,
                                         schemaPath = "classpath:schema/activateDevice.json") ActivateRequest request) {
-                return deviceService.activateDevice(deviceId)
+                return deviceService.activateDevice(deviceId, request)
                                 .map(deviceRecordMapper::toDeviceResponse);
         }
 
@@ -60,8 +61,8 @@ public class DeviceResource {
                         produces = MediaType.APPLICATION_JSON_VALUE)
         public Mono<DeviceResponse> deactivateDevice(@PathVariable("deviceId") String deviceId,
                         @ValidateJsonSchema(version = ValidateJsonSchemaVersion.V7,
-                                        schemaPath = "classpath:schema/deactivateDevice.json") ActivateRequest request) {
-                return deviceService.deactivateDevice(deviceId)
+                                        schemaPath = "classpath:schema/deactivateDevice.json") DeactivateRequest request) {
+                return deviceService.deactivateDevice(deviceId, request)
                                 .map(deviceRecordMapper::toDeviceResponse);
         }
 }

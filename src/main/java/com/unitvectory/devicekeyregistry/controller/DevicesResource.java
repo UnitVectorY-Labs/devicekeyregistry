@@ -43,9 +43,7 @@ public class DevicesResource {
         public Mono<DeviceResponse> registerDevice(@ValidateJsonSchema(
                         version = ValidateJsonSchemaVersion.V7,
                         schemaPath = "classpath:schema/postDevice.json") DeviceRequest request) {
-                return deviceService
-                                .registerDevice(request.getDeviceAlias(), request.getKeyType(),
-                                                request.getPublicKey())
+                return deviceService.registerDevice(request)
                                 .map(deviceRecordMapper::toDeviceResponse);
         }
 }

@@ -11,16 +11,28 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.unitvectory.devicekeyregistry.exception;
+package com.unitvectory.devicekeyregistry.model;
 
-import lombok.experimental.StandardException;
+import java.util.List;
+import lombok.Builder;
+import lombok.Getter;
 
 /**
- * The record not found exception.
+ * The error response.
  * 
  * @author Jared Hatfield (UnitVectorY Labs)
  */
-@StandardException
-public class RecordNotFoundException extends RuntimeException {
+@Getter
+@Builder
+public class MyErrorResponse {
 
+    /**
+     * The message
+     */
+    private String message;
+
+    /**
+     * The details
+     */
+    private List<String> details;
 }

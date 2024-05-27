@@ -14,10 +14,12 @@
 package com.unitvectory.devicekeyregistry.service;
 
 import org.springframework.stereotype.Service;
-import com.unitvectory.devicekeyregistry.exception.RecordNotFoundException;
+import com.unitvectory.devicekeyregistry.exception.DeviceNotFoundException;
+import com.unitvectory.devicekeyregistry.model.ActivateRequest;
+import com.unitvectory.devicekeyregistry.model.DeactivateRequest;
 import com.unitvectory.devicekeyregistry.model.DeviceRecord;
+import com.unitvectory.devicekeyregistry.model.DeviceRequest;
 import com.unitvectory.devicekeyregistry.model.DeviceStatus;
-import com.unitvectory.devicekeyregistry.model.KeyType;
 import com.unitvectory.devicekeyregistry.repository.DeviceRepository;
 import lombok.AllArgsConstructor;
 import reactor.core.publisher.Flux;
@@ -36,27 +38,44 @@ public class DeviceService {
 
     private EntropyService entropyService;
 
-    public Mono<DeviceRecord> registerDevice(String deviceAlias, KeyType keyType,
-            String publicKey) {
-        return Mono.just(DeviceRecord.builder().deviceId(entropyService.newDeviceId())
-                .status(DeviceStatus.PENDING).deviceAlias(deviceAlias).keyType(keyType)
-                .publicKey(publicKey).build()).flatMap(deviceRepository::save);
+    public Mono<DeviceRecord> registerDevice(DeviceRequest request) {
+        if (request == null) {
+            return Mono.error(new IllegalArgumentException("Request cannot be null"));
+        }
+
+        return Mono
+                .just(DeviceRecord.builder().deviceId(entropyService.newDeviceId())
+                        .status(DeviceStatus.PENDING).deviceAlias(request.getDeviceAlias())
+                        .keyType(request.getKeyType()).publicKey(request.getPublicKey()).build())
+                .flatMap(deviceRepository::save);
     }
 
-    public Mono<DeviceRecord> activateDevice(String deviceId) {
+    public Mono<DeviceRecord> activateDevice(String deviceId, ActivateRequest request) {
+        if (deviceId == null) {
+            return Mono.error(new IllegalArgumentException("Device ID cannot be null"));
+        } else if (request == null) {
+            return Mono.error(new IllegalArgumentException("Request cannot be null"));
+        }
+
         return getDevice(deviceId)
                 .switchIfEmpty(Mono.error(
-                        new RecordNotFoundException("Device with ID " + deviceId + " not found")))
+                        new DeviceNotFoundException("Device with ID " + deviceId + " not found")))
                 .flatMap(device -> {
                     device.setStatus(DeviceStatus.ACTIVE);
                     return deviceRepository.save(device);
                 });
     }
 
-    public Mono<DeviceRecord> deactivateDevice(String deviceId) {
+    public Mono<DeviceRecord> deactivateDevice(String deviceId, DeactivateRequest request) {
+        if (deviceId == null) {
+            return Mono.error(new IllegalArgumentException("Device ID cannot be null"));
+        } else if (request == null) {
+            return Mono.error(new IllegalArgumentException("Request cannot be null"));
+        }
+
         return getDevice(deviceId)
                 .switchIfEmpty(Mono.error(
-                        new RecordNotFoundException("Device with ID " + deviceId + " not found")))
+                        new DeviceNotFoundException("Device with ID " + deviceId + " not found")))
                 .flatMap(device -> {
                     device.setStatus(DeviceStatus.INACTIVE);
                     return deviceRepository.save(device);
@@ -69,8 +88,8 @@ public class DeviceService {
         }
 
         return this.deviceRepository.findById(deviceId)
-                .switchIfEmpty(Mono.error(new RecordNotFoundException("Device record not found")))
-                .onErrorMap(RecordNotFoundException.class, e -> e);
+                .switchIfEmpty(Mono.error(new DeviceNotFoundException("Device record not found")))
+                .onErrorMap(DeviceNotFoundException.class, e -> e);
     }
 
     public Flux<DeviceRecord> getDeviceAliases(String deviceAlias) {
