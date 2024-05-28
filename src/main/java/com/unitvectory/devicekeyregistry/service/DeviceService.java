@@ -13,8 +13,7 @@
  */
 package com.unitvectory.devicekeyregistry.service;
 
-import com.unitvectory.devicekeyregistry.model.ActivateRequest;
-import com.unitvectory.devicekeyregistry.model.DeactivateRequest;
+import com.unitvectory.devicekeyregistry.model.DeviceStatusRequest;
 import com.unitvectory.devicekeyregistry.model.DeviceRecord;
 import com.unitvectory.devicekeyregistry.model.DeviceRequest;
 import reactor.core.publisher.Flux;
@@ -29,9 +28,7 @@ public interface DeviceService {
 
     Mono<DeviceRecord> registerDevice(DeviceRequest request);
 
-    Mono<DeviceRecord> activateDevice(String deviceId, ActivateRequest request);
-
-    Mono<DeviceRecord> deactivateDevice(String deviceId, DeactivateRequest request);
+    Mono<DeviceRecord> setDeviceStatus(String deviceId, DeviceStatusRequest request);
 
     Mono<DeviceRecord> getDevice(String deviceId);
 

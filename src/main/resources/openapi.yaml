@@ -4,7 +4,7 @@ info:
   description: API for securely registering, approving, disabling, and validating device public keys using JWTs and JWKS URLs.
   version: 1.0.0
 paths:
-  /v1/device:
+  /v1/devices:
     post:
       summary: Register a new device
       requestBody:
@@ -12,7 +12,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/DeviceRequest"
+              $ref: "#/components/schemas/CreateDeviceRequest"
       responses:
         200:
           description: Device registered successfully
@@ -21,7 +21,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/DeviceResponse"
 
-  /v1/device/{deviceId}:
+  /v1/devices/{deviceId}:
     get:
       summary: Get device information by deviceId
       parameters:
@@ -34,6 +34,30 @@ paths:
       responses:
         200:
           description: Device information retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeviceResponse"
+
+  /v1/devices/{deviceId}/status:
+    patch:
+      summary: Activate or deactivate a device
+      parameters:
+        - in: path
+          name: deviceId
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PatchDeviceRequest"
+      responses:
+        200:
+          description: Device activated successfully
           content:
             application/json:
               schema:
@@ -67,59 +91,9 @@ paths:
               schema:
                 $ref: "#/components/schemas/DevicesResponse"
 
-  /v1/device/{deviceId}/activate:
-    put:
-      summary: Activate a device
-      parameters:
-        - in: path
-          name: deviceId
-          required: true
-          schema:
-            type: string
-            format: uuid
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              additionalProperties: false
-      responses:
-        200:
-          description: Device activated successfully
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/DeviceResponse"
-
-  /v1/device/{deviceId}/deactivate:
-    put:
-      summary: Deactivate a device
-      parameters:
-        - in: path
-          name: deviceId
-          required: true
-          schema:
-            type: string
-            format: uuid
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              additionalProperties: false
-      responses:
-        200:
-          description: Device deactivated successfully
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/DeviceResponse"
-
 components:
   schemas:
-    DeviceRequest:
+    CreateDeviceRequest:
       type: object
       properties:
         deviceAlias:
@@ -136,6 +110,16 @@ components:
         - deviceAlias
         - keyType
         - publicKey
+      additionalProperties: false
+
+    PatchDeviceRequest:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [ACTIVE, INACTIVE]
+      required:
+        - status
       additionalProperties: false
 
     DeviceResponse:

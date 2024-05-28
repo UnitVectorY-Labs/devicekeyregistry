@@ -14,9 +14,13 @@
 package com.unitvectory.devicekeyregistry.controller;
 
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.unitvectory.devicekeyregistry.mapper.DeviceRecordMapper;
+import com.unitvectory.devicekeyregistry.model.DeviceStatusRequest;
 import com.unitvectory.devicekeyregistry.model.DeviceRequest;
 import com.unitvectory.devicekeyregistry.model.DeviceResponse;
 import com.unitvectory.devicekeyregistry.service.DeviceService;
@@ -38,12 +42,27 @@ public class DevicesResource {
 
         private DeviceService deviceService;
 
-        @PostMapping(path = "/v1/device", consumes = MediaType.APPLICATION_JSON_VALUE,
+        @PostMapping(path = "/v1/devices", consumes = MediaType.APPLICATION_JSON_VALUE,
                         produces = MediaType.APPLICATION_JSON_VALUE)
         public Mono<DeviceResponse> registerDevice(@ValidateJsonSchema(
                         version = ValidateJsonSchemaVersion.V7,
-                        schemaPath = "classpath:schema/postDevice.json") DeviceRequest request) {
+                        schemaPath = "classpath:schema/createDevice.json") DeviceRequest request) {
                 return deviceService.registerDevice(request)
+                                .map(deviceRecordMapper::toDeviceResponse);
+        }
+
+        @GetMapping(path = "/v1/devices/{deviceId}", produces = MediaType.APPLICATION_JSON_VALUE)
+        public Mono<DeviceResponse> getDevice(@PathVariable("deviceId") String deviceId) {
+                return deviceService.getDevice(deviceId).map(deviceRecordMapper::toDeviceResponse);
+        }
+
+        @PatchMapping(path = "/v1/devices/{deviceId}/status",
+                        consumes = MediaType.APPLICATION_JSON_VALUE,
+                        produces = MediaType.APPLICATION_JSON_VALUE)
+        public Mono<DeviceResponse> deactivateDevice(@PathVariable("deviceId") String deviceId,
+                        @ValidateJsonSchema(version = ValidateJsonSchemaVersion.V7,
+                                        schemaPath = "classpath:schema/deactivateDevice.json") DeviceStatusRequest request) {
+                return deviceService.setDeviceStatus(deviceId, request)
                                 .map(deviceRecordMapper::toDeviceResponse);
         }
 }

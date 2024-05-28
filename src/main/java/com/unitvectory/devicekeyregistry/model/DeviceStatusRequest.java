@@ -17,12 +17,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * The activate request.
+ * The device status request.
  * 
  * @author Jared Hatfield (UnitVectorY Labs)
  */
 @Data
 @NoArgsConstructor
-public class ActivateRequest {
+public class DeviceStatusRequest {
+
+    private DeviceStatus status;
 
 }

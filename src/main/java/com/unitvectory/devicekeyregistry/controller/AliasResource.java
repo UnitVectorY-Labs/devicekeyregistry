@@ -24,13 +24,13 @@ import lombok.AllArgsConstructor;
 import reactor.core.publisher.Mono;
 
 /**
- * The device alias resource.
+ * The alias resource.
  * 
  * @author Jared Hatfield (UnitVectorY Labs)
  */
 @RestController
 @AllArgsConstructor
-public class DeviceAliasResource {
+public class AliasResource {
 
     private final DeviceRecordMapper deviceRecordMapper = DeviceRecordMapper.INSTANCE;
 

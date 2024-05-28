@@ -15,8 +15,7 @@ package com.unitvectory.devicekeyregistry.service;
 
 import org.springframework.stereotype.Service;
 import com.unitvectory.devicekeyregistry.exception.DeviceNotFoundException;
-import com.unitvectory.devicekeyregistry.model.ActivateRequest;
-import com.unitvectory.devicekeyregistry.model.DeactivateRequest;
+import com.unitvectory.devicekeyregistry.model.DeviceStatusRequest;
 import com.unitvectory.devicekeyregistry.model.DeviceRecord;
 import com.unitvectory.devicekeyregistry.model.DeviceRequest;
 import com.unitvectory.devicekeyregistry.model.DeviceStatus;
@@ -50,7 +49,7 @@ public class DeviceServiceImpl implements DeviceService {
                 .flatMap(deviceRepository::save);
     }
 
-    public Mono<DeviceRecord> activateDevice(String deviceId, ActivateRequest request) {
+    public Mono<DeviceRecord> setDeviceStatus(String deviceId, DeviceStatusRequest request) {
         if (deviceId == null) {
             return Mono.error(new IllegalArgumentException("Device ID cannot be null"));
         } else if (request == null) {
@@ -61,23 +60,7 @@ public class DeviceServiceImpl implements DeviceService {
                 .switchIfEmpty(Mono.error(
                         new DeviceNotFoundException("Device with ID " + deviceId + " not found")))
                 .flatMap(device -> {
-                    device.setStatus(DeviceStatus.ACTIVE);
-                    return deviceRepository.save(device);
-                });
-    }
-
-    public Mono<DeviceRecord> deactivateDevice(String deviceId, DeactivateRequest request) {
-        if (deviceId == null) {
-            return Mono.error(new IllegalArgumentException("Device ID cannot be null"));
-        } else if (request == null) {
-            return Mono.error(new IllegalArgumentException("Request cannot be null"));
-        }
-
-        return getDevice(deviceId)
-                .switchIfEmpty(Mono.error(
-                        new DeviceNotFoundException("Device with ID " + deviceId + " not found")))
-                .flatMap(device -> {
-                    device.setStatus(DeviceStatus.INACTIVE);
+                    device.setStatus(request.getStatus());
                     return deviceRepository.save(device);
                 });
     }
