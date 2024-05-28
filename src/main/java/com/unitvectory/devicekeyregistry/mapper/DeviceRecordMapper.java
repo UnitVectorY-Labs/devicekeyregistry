@@ -38,4 +38,6 @@ public interface DeviceRecordMapper {
     DeviceResponse toDeviceResponse(DeviceRecord record);
 
     List<DeviceResponse> toDeviceResponseList(List<DeviceRecord> list);
+
+    DeviceRecord clone(DeviceRecord record);
 }

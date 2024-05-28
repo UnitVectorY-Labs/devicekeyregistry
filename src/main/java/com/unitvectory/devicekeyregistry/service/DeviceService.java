@@ -13,15 +13,10 @@
  */
 package com.unitvectory.devicekeyregistry.service;
 
-import org.springframework.stereotype.Service;
-import com.unitvectory.devicekeyregistry.exception.DeviceNotFoundException;
 import com.unitvectory.devicekeyregistry.model.ActivateRequest;
 import com.unitvectory.devicekeyregistry.model.DeactivateRequest;
 import com.unitvectory.devicekeyregistry.model.DeviceRecord;
 import com.unitvectory.devicekeyregistry.model.DeviceRequest;
-import com.unitvectory.devicekeyregistry.model.DeviceStatus;
-import com.unitvectory.devicekeyregistry.repository.DeviceRepository;
-import lombok.AllArgsConstructor;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -30,77 +25,17 @@ import reactor.core.publisher.Mono;
  * 
  * @author Jared Hatfield (UnitVectorY Labs)
  */
-@AllArgsConstructor
-@Service
-public class DeviceService {
+public interface DeviceService {
 
-    private DeviceRepository deviceRepository;
+    Mono<DeviceRecord> registerDevice(DeviceRequest request);
 
-    private EntropyService entropyService;
+    Mono<DeviceRecord> activateDevice(String deviceId, ActivateRequest request);
 
-    public Mono<DeviceRecord> registerDevice(DeviceRequest request) {
-        if (request == null) {
-            return Mono.error(new IllegalArgumentException("Request cannot be null"));
-        }
+    Mono<DeviceRecord> deactivateDevice(String deviceId, DeactivateRequest request);
 
-        return Mono
-                .just(DeviceRecord.builder().deviceId(entropyService.newDeviceId())
-                        .status(DeviceStatus.PENDING).deviceAlias(request.getDeviceAlias())
-                        .keyType(request.getKeyType()).publicKey(request.getPublicKey()).build())
-                .flatMap(deviceRepository::save);
-    }
+    Mono<DeviceRecord> getDevice(String deviceId);
 
-    public Mono<DeviceRecord> activateDevice(String deviceId, ActivateRequest request) {
-        if (deviceId == null) {
-            return Mono.error(new IllegalArgumentException("Device ID cannot be null"));
-        } else if (request == null) {
-            return Mono.error(new IllegalArgumentException("Request cannot be null"));
-        }
+    Flux<DeviceRecord> getDeviceAliases(String deviceAlias);
 
-        return getDevice(deviceId)
-                .switchIfEmpty(Mono.error(
-                        new DeviceNotFoundException("Device with ID " + deviceId + " not found")))
-                .flatMap(device -> {
-                    device.setStatus(DeviceStatus.ACTIVE);
-                    return deviceRepository.save(device);
-                });
-    }
-
-    public Mono<DeviceRecord> deactivateDevice(String deviceId, DeactivateRequest request) {
-        if (deviceId == null) {
-            return Mono.error(new IllegalArgumentException("Device ID cannot be null"));
-        } else if (request == null) {
-            return Mono.error(new IllegalArgumentException("Request cannot be null"));
-        }
-
-        return getDevice(deviceId)
-                .switchIfEmpty(Mono.error(
-                        new DeviceNotFoundException("Device with ID " + deviceId + " not found")))
-                .flatMap(device -> {
-                    device.setStatus(DeviceStatus.INACTIVE);
-                    return deviceRepository.save(device);
-                });
-    }
-
-    public Mono<DeviceRecord> getDevice(String deviceId) {
-        if (deviceId == null) {
-            return Mono.error(new IllegalArgumentException("Device ID cannot be null"));
-        }
-
-        return this.deviceRepository.findById(deviceId)
-                .switchIfEmpty(Mono.error(new DeviceNotFoundException("Device record not found")))
-                .onErrorMap(DeviceNotFoundException.class, e -> e);
-    }
-
-    public Flux<DeviceRecord> getDeviceAliases(String deviceAlias) {
-        if (deviceAlias == null) {
-            return Flux.error(new IllegalArgumentException("Device alias cannot be null"));
-        }
-
-        return this.deviceRepository.findByDeviceAlias(deviceAlias);
-    }
-
-    public Flux<DeviceRecord> getPendingDevices() {
-        return deviceRepository.findByStatus(DeviceStatus.PENDING);
-    }
+    Flux<DeviceRecord> getPendingDevices();
 }

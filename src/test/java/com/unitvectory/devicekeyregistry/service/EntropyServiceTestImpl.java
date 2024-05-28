@@ -13,12 +13,20 @@
  */
 package com.unitvectory.devicekeyregistry.service;
 
+import org.springframework.stereotype.Service;
+
 /**
- * The entropy service.
+ * The entropy service test implementation.
  * 
  * @author Jared Hatfield (UnitVectorY Labs)
  */
-public interface EntropyService {
+@Service
+public class EntropyServiceTestImpl implements EntropyService {
 
-    String newDeviceId();
+    @Override
+    public String newDeviceId() {
+        // Always returning a static UUID for test cases
+        return "00000000-0000-4000-0000-000000000000";
+    }
+
 }

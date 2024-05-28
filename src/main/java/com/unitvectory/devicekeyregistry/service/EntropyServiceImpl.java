@@ -13,12 +13,18 @@
  */
 package com.unitvectory.devicekeyregistry.service;
 
+import java.util.UUID;
+import org.springframework.stereotype.Service;
+
 /**
- * The entropy service.
+ * The entropy service implementation.
  * 
  * @author Jared Hatfield (UnitVectorY Labs)
  */
-public interface EntropyService {
+@Service
+public class EntropyServiceImpl implements EntropyService {
 
-    String newDeviceId();
+    public String newDeviceId() {
+        return UUID.randomUUID().toString();
+    }
 }
