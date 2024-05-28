@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class EntropyServiceImpl implements EntropyService {
 
+    @Override
     public String newDeviceId() {
         return UUID.randomUUID().toString();
     }

@@ -37,6 +37,7 @@ public class DeviceServiceImpl implements DeviceService {
 
     private EntropyService entropyService;
 
+    @Override
     public Mono<DeviceRecord> registerDevice(DeviceRequest request) {
         if (request == null) {
             return Mono.error(new IllegalArgumentException("Request cannot be null"));
@@ -49,6 +50,7 @@ public class DeviceServiceImpl implements DeviceService {
                 .flatMap(deviceRepository::save);
     }
 
+    @Override
     public Mono<DeviceRecord> setDeviceStatus(String deviceId, DeviceStatusRequest request) {
         if (deviceId == null) {
             return Mono.error(new IllegalArgumentException("Device ID cannot be null"));
@@ -65,6 +67,7 @@ public class DeviceServiceImpl implements DeviceService {
                 });
     }
 
+    @Override
     public Mono<DeviceRecord> getDevice(String deviceId) {
         if (deviceId == null) {
             return Mono.error(new IllegalArgumentException("Device ID cannot be null"));
@@ -75,6 +78,7 @@ public class DeviceServiceImpl implements DeviceService {
                 .onErrorMap(DeviceNotFoundException.class, e -> e);
     }
 
+    @Override
     public Flux<DeviceRecord> getDeviceAliases(String deviceAlias) {
         if (deviceAlias == null) {
             return Flux.error(new IllegalArgumentException("Device alias cannot be null"));
@@ -83,6 +87,7 @@ public class DeviceServiceImpl implements DeviceService {
         return this.deviceRepository.findByDeviceAlias(deviceAlias);
     }
 
+    @Override
     public Flux<DeviceRecord> getPendingDevices() {
         return deviceRepository.findByStatus(DeviceStatus.PENDING);
     }
