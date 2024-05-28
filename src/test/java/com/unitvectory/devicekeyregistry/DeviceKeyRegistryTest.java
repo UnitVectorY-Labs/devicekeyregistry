@@ -15,6 +15,7 @@ package com.unitvectory.devicekeyregistry;
 
 import static org.junit.jupiter.api.Assertions.fail;
 import java.io.File;
+import java.util.Set;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,11 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.networknt.schema.JsonSchema;
+import com.networknt.schema.JsonSchemaFactory;
+import com.networknt.schema.SchemaLocation;
+import com.networknt.schema.SpecVersion.VersionFlag;
+import com.networknt.schema.ValidationMessage;
 import com.unitvectory.devicekeyregistry.repository.DeviceMemoryRepository;
 import com.unitvectory.fileparamunit.ListFileSource;
 
@@ -47,6 +53,16 @@ public class DeviceKeyRegistryTest {
     @Autowired
     private DeviceMemoryRepository deviceMemoryRepository;
 
+    private final JsonSchema schema;
+
+    public DeviceKeyRegistryTest() {
+        super();
+
+        JsonSchemaFactory factory = JsonSchemaFactory.getInstance(VersionFlag.V7);
+        this.schema = factory.getSchema(SchemaLocation.of("classpath:testschema.json"));
+
+    }
+
     @ParameterizedTest
     @ListFileSource(resources = "/resttest/", fileExtension = ".json", recurse = true)
     public void testIt(String file) throws Exception {
@@ -57,37 +73,55 @@ public class DeviceKeyRegistryTest {
         // Load the file in using the ObjectMapper
         JsonNode node = objectMapper.readTree(new File(file));
 
-        // Pull out the fields from the test case file
-        String verb = node.get("verb").asText();
-        String path = node.get("path").asText();
-        int expectedStatusCode = node.get("expectedStatusCode").asInt();
-        JsonNode expectedResponse = node.get("expectedResponse");
+        Set<ValidationMessage> schemaValidationMessages = this.schema.validate(node);
+        if (schemaValidationMessages.size() > 0) {
+            // Build a string with all of the failure messages
+            StringBuilder sb = new StringBuilder();
+            for (ValidationMessage message : schemaValidationMessages) {
+                sb.append(message.getMessage());
+                sb.append("\n");
+            }
 
-        String requestBody = null;
-        if (node.has("requestBody")) {
-            requestBody = objectMapper.writeValueAsString(node.get("requestBody"));
+            fail("Test schema validation failed: " + sb.toString());
         }
 
-        // Perform the test
+        // Get JsonNode from "requests" array in node and loop through each request
+        JsonNode requests = node.get("requests");
+        for (JsonNode request : requests) {
 
-        if ("GET".equals(verb)) {
-            // GET
-            webTestClient.get().uri(path).accept(MediaType.APPLICATION_JSON).exchange()
-                    .expectStatus().isEqualTo(expectedStatusCode).expectBody(JsonNode.class)
-                    .isEqualTo(expectedResponse);
-        } else if ("POST".equals(verb)) {
-            // POST
-            webTestClient.post().uri(path).accept(MediaType.APPLICATION_JSON)
-                    .contentType(MediaType.APPLICATION_JSON).bodyValue(requestBody).exchange()// .expectStatus().isEqualTo(expectedStatusCode)
-                    .expectBody(JsonNode.class).isEqualTo(expectedResponse);
-        } else if ("PUT".equals(verb)) {
-            // PUT
-            webTestClient.put().uri(path).accept(MediaType.APPLICATION_JSON)
-                    .contentType(MediaType.APPLICATION_JSON).bodyValue(requestBody).exchange()
-                    .expectStatus().isEqualTo(expectedStatusCode).expectBody(JsonNode.class)
-                    .isEqualTo(expectedResponse);
-        } else {
-            fail("Unknown verb: " + verb);
+
+            // Pull out the fields from the test case file
+            String verb = request.get("verb").asText();
+            String path = request.get("path").asText();
+            int expectedStatusCode = request.get("expectedStatusCode").asInt();
+            JsonNode expectedResponse = request.get("expectedResponse");
+
+            String requestBody = null;
+            if (request.has("requestBody")) {
+                requestBody = objectMapper.writeValueAsString(request.get("requestBody"));
+            }
+
+            // Perform the test
+
+            if ("GET".equals(verb)) {
+                // GET
+                webTestClient.get().uri(path).accept(MediaType.APPLICATION_JSON).exchange()
+                        .expectStatus().isEqualTo(expectedStatusCode).expectBody(JsonNode.class)
+                        .isEqualTo(expectedResponse);
+            } else if ("POST".equals(verb)) {
+                // POST
+                webTestClient.post().uri(path).accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON).bodyValue(requestBody).exchange()// .expectStatus().isEqualTo(expectedStatusCode)
+                        .expectBody(JsonNode.class).isEqualTo(expectedResponse);
+            } else if ("PUT".equals(verb)) {
+                // PUT
+                webTestClient.put().uri(path).accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON).bodyValue(requestBody).exchange()
+                        .expectStatus().isEqualTo(expectedStatusCode).expectBody(JsonNode.class)
+                        .isEqualTo(expectedResponse);
+            } else {
+                fail("Unknown verb: " + verb);
+            }
         }
     }
 }

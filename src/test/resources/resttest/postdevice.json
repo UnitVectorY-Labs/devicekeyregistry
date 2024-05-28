@@ -1,17 +1,21 @@
 {
-  "verb": "POST",
-  "path": "/v1/devices",
-  "expectedStatusCode": 200,
-  "requestBody": {
-    "deviceAlias": "abc123",
-    "keyType": "RS256",
-    "publicKey": "public-key-here"
-  },
-  "expectedResponse": {
-    "deviceId": "00000000-0000-4000-0000-000000000000",
-    "status": "PENDING",
-    "deviceAlias": "abc123",
-    "keyType": "RS256",
-    "publicKey": "public-key-here"
-  }
+  "requests": [
+    {
+      "verb": "POST",
+      "path": "/v1/devices",
+      "expectedStatusCode": 200,
+      "requestBody": {
+        "deviceAlias": "abc123",
+        "keyType": "RS256",
+        "publicKey": "public-key-here"
+      },
+      "expectedResponse": {
+        "deviceId": "00000000-0000-4000-0000-000000000000",
+        "status": "PENDING",
+        "deviceAlias": "abc123",
+        "keyType": "RS256",
+        "publicKey": "public-key-here"
+      }
+    }
+  ]
 }

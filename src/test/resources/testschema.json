@@ -1,0 +1,36 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "requests": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "verb": {
+            "type": "string",
+            "enum": ["POST", "GET", "PATCH"]
+          },
+          "path": {
+            "type": "string"
+          },
+          "expectedStatusCode": {
+            "type": "integer"
+          },
+          "requestBody": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "expectedResponse": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "required": ["verb", "path", "expectedStatusCode"],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": ["requests"],
+  "additionalProperties": false
+}

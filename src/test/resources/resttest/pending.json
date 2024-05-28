@@ -1,6 +1,10 @@
 {
-  "verb": "GET",
-  "path": "/v1/pending",
-  "expectedStatusCode": 200,
-  "expectedResponse": { "devices": [] }
+  "requests": [
+    {
+      "verb": "GET",
+      "path": "/v1/pending",
+      "expectedStatusCode": 200,
+      "expectedResponse": { "devices": [] }
+    }
+  ]
 }

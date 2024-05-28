@@ -1,6 +1,10 @@
 {
-  "verb": "GET",
-  "path": "/",
-  "expectedStatusCode": 404,
-  "expectedResponse": { "status": 404, "error": "Not Found" }
+  "requests": [
+    {
+      "verb": "GET",
+      "path": "/",
+      "expectedStatusCode": 404,
+      "expectedResponse": { "status": 404, "error": "Not Found" }
+    }
+  ]
 }
