@@ -25,6 +25,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.unitvectory.devicekeyregistry.repository.DeviceMemoryRepository;
 import com.unitvectory.fileparamunit.ListFileSource;
 
 
@@ -43,30 +44,50 @@ public class DeviceKeyRegistryTest {
     @Autowired
     private WebTestClient webTestClient;
 
+    @Autowired
+    private DeviceMemoryRepository deviceMemoryRepository;
+
     @ParameterizedTest
     @ListFileSource(resources = "/resttest/", fileExtension = ".json", recurse = true)
     public void testIt(String file) throws Exception {
 
-        // Load the file in using the ObjectMapper
+        // Clear the device memory repository before each test
+        this.deviceMemoryRepository.clear();
 
+        // Load the file in using the ObjectMapper
         JsonNode node = objectMapper.readTree(new File(file));
 
+        // Pull out the fields from the test case file
         String verb = node.get("verb").asText();
         String path = node.get("path").asText();
         int expectedStatusCode = node.get("expectedStatusCode").asInt();
         JsonNode expectedResponse = node.get("expectedResponse");
 
-        System.out.println("foo");
+        String requestBody = null;
+        if (node.has("requestBody")) {
+            requestBody = objectMapper.writeValueAsString(node.get("requestBody"));
+        }
+
+        // Perform the test
 
         if ("GET".equals(verb)) {
-
+            // GET
             webTestClient.get().uri(path).accept(MediaType.APPLICATION_JSON).exchange()
+                    .expectStatus().isEqualTo(expectedStatusCode).expectBody(JsonNode.class)
+                    .isEqualTo(expectedResponse);
+        } else if ("POST".equals(verb)) {
+            // POST
+            webTestClient.post().uri(path).accept(MediaType.APPLICATION_JSON)
+                    .contentType(MediaType.APPLICATION_JSON).bodyValue(requestBody).exchange()// .expectStatus().isEqualTo(expectedStatusCode)
+                    .expectBody(JsonNode.class).isEqualTo(expectedResponse);
+        } else if ("PUT".equals(verb)) {
+            // PUT
+            webTestClient.put().uri(path).accept(MediaType.APPLICATION_JSON)
+                    .contentType(MediaType.APPLICATION_JSON).bodyValue(requestBody).exchange()
                     .expectStatus().isEqualTo(expectedStatusCode).expectBody(JsonNode.class)
                     .isEqualTo(expectedResponse);
         } else {
             fail("Unknown verb: " + verb);
         }
     }
-
-
 }

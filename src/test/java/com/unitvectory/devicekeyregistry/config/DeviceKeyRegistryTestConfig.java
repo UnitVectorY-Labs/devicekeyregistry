@@ -17,7 +17,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import com.unitvectory.devicekeyregistry.repository.DeviceMemoryRepository;
-import com.unitvectory.devicekeyregistry.repository.DeviceRepository;
 import com.unitvectory.devicekeyregistry.service.DeviceService;
 import com.unitvectory.devicekeyregistry.service.DeviceServiceImpl;
 import com.unitvectory.devicekeyregistry.service.EntropyService;
@@ -33,14 +32,14 @@ import com.unitvectory.devicekeyregistry.service.EntropyServiceTestImpl;
 public class DeviceKeyRegistryTestConfig {
 
     @Bean
-    public DeviceRepository deviceRepository() {
+    public DeviceMemoryRepository deviceMemoryRepository() {
         return new DeviceMemoryRepository();
     }
 
     @Bean
-    public DeviceService deviceService(DeviceRepository deviceRepository,
+    public DeviceService deviceService(DeviceMemoryRepository deviceMemoryRepository,
             EntropyService entropyService) {
-        return new DeviceServiceImpl(deviceRepository, entropyService);
+        return new DeviceServiceImpl(deviceMemoryRepository, entropyService);
     }
 
     @Bean

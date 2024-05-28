@@ -30,6 +30,10 @@ public class DeviceMemoryRepository implements DeviceRepository {
 
     private Map<String, DeviceRecord> records = new HashMap<>();
 
+    public void clear() {
+        records.clear();
+    }
+
     @Override
     public <S extends DeviceRecord> Mono<S> save(S record) {
         // Save the record to the memory repository
