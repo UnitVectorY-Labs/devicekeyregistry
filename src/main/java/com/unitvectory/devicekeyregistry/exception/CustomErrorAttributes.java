@@ -33,8 +33,9 @@ public class CustomErrorAttributes extends DefaultErrorAttributes {
             ErrorAttributeOptions options) {
         Map<String, Object> errorAttributes = super.getErrorAttributes(webRequest, options);
 
-        // Remove the timestamp attribute
+        // Remove some of the attribute
         errorAttributes.remove("timestamp");
+        errorAttributes.remove("path");
 
         return errorAttributes;
     }

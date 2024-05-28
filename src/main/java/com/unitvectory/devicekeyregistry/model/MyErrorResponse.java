@@ -14,6 +14,7 @@
 package com.unitvectory.devicekeyregistry.model;
 
 import java.util.List;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -24,12 +25,18 @@ import lombok.Getter;
  */
 @Getter
 @Builder
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class MyErrorResponse {
+
+    /**
+     * The status
+     */
+    private int status;
 
     /**
      * The message
      */
-    private String message;
+    private String error;
 
     /**
      * The details

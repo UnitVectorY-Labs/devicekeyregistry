@@ -88,7 +88,7 @@ public class DeviceServiceImpl implements DeviceService {
         }
 
         return this.deviceRepository.findById(deviceId)
-                .switchIfEmpty(Mono.error(new DeviceNotFoundException("Device record not found")))
+                .switchIfEmpty(Mono.error(new DeviceNotFoundException("Not Found")))
                 .onErrorMap(DeviceNotFoundException.class, e -> e);
     }
 

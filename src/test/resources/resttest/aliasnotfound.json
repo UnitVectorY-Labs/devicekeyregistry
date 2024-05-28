@@ -1,0 +1,6 @@
+{
+  "verb": "GET",
+  "path": "/v1/alias/foo",
+  "expectedStatusCode": 200,
+  "expectedResponse": { "devices": [] }
+}

@@ -1,6 +1,6 @@
 {
   "verb": "GET",
-  "path": "/",
+  "path": "/v1/device/foo",
   "expectedStatusCode": 404,
   "expectedResponse": { "status": 404, "error": "Not Found" }
 }
