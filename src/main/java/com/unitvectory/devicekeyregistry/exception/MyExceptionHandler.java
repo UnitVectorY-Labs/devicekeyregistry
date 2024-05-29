@@ -46,6 +46,15 @@ public class MyExceptionHandler {
                         .details(Collections.unmodifiableList(detailsList)).build());
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<MyErrorResponse> onJsonParseException(IllegalArgumentException ex) {
+        return ResponseEntity.internalServerError()
+                .body(MyErrorResponse.builder().status(500).error("Internal Server Error")
+                        .details(Arrays
+                                .asList(getStringBeforeLineReturn("IllegalArgumentException")))
+                        .build());
+    }
+
     @ExceptionHandler(JsonParseException.class)
     public ResponseEntity<MyErrorResponse> onJsonParseException(JsonParseException ex) {
         return ResponseEntity.badRequest()
