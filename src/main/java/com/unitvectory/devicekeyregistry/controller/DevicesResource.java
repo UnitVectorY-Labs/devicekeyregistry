@@ -61,7 +61,7 @@ public class DevicesResource {
                         produces = MediaType.APPLICATION_JSON_VALUE)
         public Mono<DeviceResponse> deactivateDevice(@PathVariable("deviceId") String deviceId,
                         @ValidateJsonSchema(version = ValidateJsonSchemaVersion.V7,
-                                        schemaPath = "classpath:schema/deactivateDevice.json") DeviceStatusRequest request) {
+                                        schemaPath = "classpath:schema/patchDevice.json") DeviceStatusRequest request) {
                 return deviceService.setDeviceStatus(deviceId, request)
                                 .map(deviceRecordMapper::toDeviceResponse);
         }

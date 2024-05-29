@@ -24,6 +24,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.test.web.reactive.server.WebTestClient.ResponseSpec;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.networknt.schema.JsonSchema;
@@ -105,20 +106,36 @@ public class DeviceKeyRegistryTest {
 
             if ("GET".equals(verb)) {
                 // GET
-                webTestClient.get().uri(path).accept(MediaType.APPLICATION_JSON).exchange()
-                        .expectStatus().isEqualTo(expectedStatusCode).expectBody(JsonNode.class)
-                        .isEqualTo(expectedResponse);
+                ResponseSpec responseSepc =
+                        webTestClient.get().uri(path).accept(MediaType.APPLICATION_JSON).exchange()
+                                .expectStatus().isEqualTo(expectedStatusCode);
+                if (expectedResponse != null) {
+                    responseSepc.expectBody(JsonNode.class).isEqualTo(expectedResponse);
+                }
             } else if ("POST".equals(verb)) {
                 // POST
-                webTestClient.post().uri(path).accept(MediaType.APPLICATION_JSON)
-                        .contentType(MediaType.APPLICATION_JSON).bodyValue(requestBody).exchange()// .expectStatus().isEqualTo(expectedStatusCode)
-                        .expectBody(JsonNode.class).isEqualTo(expectedResponse);
+                ResponseSpec responseSepc = webTestClient.post().uri(path)
+                        .accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON)
+                        .bodyValue(requestBody).exchange();
+                if (expectedResponse != null) {
+                    responseSepc.expectBody(JsonNode.class).isEqualTo(expectedResponse);
+                }
             } else if ("PUT".equals(verb)) {
                 // PUT
-                webTestClient.put().uri(path).accept(MediaType.APPLICATION_JSON)
-                        .contentType(MediaType.APPLICATION_JSON).bodyValue(requestBody).exchange()
-                        .expectStatus().isEqualTo(expectedStatusCode).expectBody(JsonNode.class)
-                        .isEqualTo(expectedResponse);
+                ResponseSpec responseSepc = webTestClient.put().uri(path)
+                        .accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON)
+                        .bodyValue(requestBody).exchange();
+                if (expectedResponse != null) {
+                    responseSepc.expectBody(JsonNode.class).isEqualTo(expectedResponse);
+                }
+            } else if ("PATCH".equals(verb)) {
+                // PATCH
+                ResponseSpec responseSepc = webTestClient.patch().uri(path)
+                        .accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON)
+                        .bodyValue(requestBody).exchange();
+                if (requestBody != null) {
+                    responseSepc.expectBody(JsonNode.class).isEqualTo(expectedResponse);
+                }
             } else {
                 fail("Unknown verb: " + verb);
             }

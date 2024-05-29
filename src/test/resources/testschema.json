@@ -9,7 +9,7 @@
         "properties": {
           "verb": {
             "type": "string",
-            "enum": ["POST", "GET", "PATCH"]
+            "enum": ["GET", "POST", "PUT", "PATCH"]
           },
           "path": {
             "type": "string"

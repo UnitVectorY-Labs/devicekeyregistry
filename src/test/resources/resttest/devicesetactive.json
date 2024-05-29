@@ -1,0 +1,53 @@
+{
+  "requests": [
+    {
+      "verb": "POST",
+      "path": "/v1/devices",
+      "expectedStatusCode": 200,
+      "requestBody": {
+        "deviceAlias": "abc123",
+        "keyType": "RS256",
+        "publicKey": "public-key-here"
+      }
+    },
+    {
+      "verb": "GET",
+      "path": "/v1/devices/00000000-0000-4000-0000-000000000000",
+      "expectedStatusCode": 200,
+      "expectedResponse": {
+        "deviceId": "00000000-0000-4000-0000-000000000000",
+        "status": "PENDING",
+        "deviceAlias": "abc123",
+        "keyType": "RS256",
+        "publicKey": "public-key-here"
+      }
+    },
+    {
+      "verb": "PATCH",
+      "path": "/v1/devices/00000000-0000-4000-0000-000000000000/status",
+      "expectedStatusCode": 200,
+      "requestBody": {
+        "status": "ACTIVE"
+      },
+      "expectedResponse": {
+        "deviceId": "00000000-0000-4000-0000-000000000000",
+        "status": "ACTIVE",
+        "deviceAlias": "abc123",
+        "keyType": "RS256",
+        "publicKey": "public-key-here"
+      }
+    },
+    {
+      "verb": "GET",
+      "path": "/v1/devices/00000000-0000-4000-0000-000000000000",
+      "expectedStatusCode": 200,
+      "expectedResponse": {
+        "deviceId": "00000000-0000-4000-0000-000000000000",
+        "status": "ACTIVE",
+        "deviceAlias": "abc123",
+        "keyType": "RS256",
+        "publicKey": "public-key-here"
+      }
+    }
+  ]
+}
