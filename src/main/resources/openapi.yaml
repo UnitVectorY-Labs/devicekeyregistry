@@ -20,6 +20,18 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/DeviceResponse"
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 
   /v1/devices/{deviceId}:
     get:
@@ -38,6 +50,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/DeviceResponse"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 
   /v1/devices/{deviceId}/status:
     patch:
@@ -62,6 +80,18 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/DeviceResponse"
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 
   /v1/alias/{deviceAlias}:
     get:
@@ -79,6 +109,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/DevicesResponse"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 
   /v1/pending:
     get:
@@ -90,9 +126,31 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/DevicesResponse"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 
 components:
   schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+        error:
+          type: string
+        details:
+          type: array
+          items:
+            type: string
+      required:
+        - status
+        - error
+      additionalProperties: false
+
     CreateDeviceRequest:
       type: object
       properties:
