@@ -41,14 +41,14 @@ import lombok.AllArgsConstructor;
 public class SecurityConfig {
 
         /**
-         * Google's URL for validating their JWTs
+         * THe authorized JWKS URL
          */
-        private static final String GOOGLE_JWKS = "https://www.googleapis.com/oauth2/v3/certs";
+        private String authorizedJwks;
 
         /**
-         * Issuer used by Google's identity provider
+         * THe authorized issuer
          */
-        private static final String GOOGLE_ISSUER = "https://accounts.google.com";
+        private String authorizedIssuer;
 
         /**
          * Service used to authorize the request
@@ -58,8 +58,8 @@ public class SecurityConfig {
         @Bean
         public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
                 // JWT Decoding and validation
-                NimbusJwtDecoder jwtDecoder = NimbusJwtDecoder.withJwkSetUri(GOOGLE_JWKS).build();
-                OAuth2TokenValidator<Jwt> withIssuer = JwtValidators.createDefaultWithIssuer(GOOGLE_ISSUER);
+                NimbusJwtDecoder jwtDecoder = NimbusJwtDecoder.withJwkSetUri(authorizedJwks).build();
+                OAuth2TokenValidator<Jwt> withIssuer = JwtValidators.createDefaultWithIssuer(authorizedIssuer);
                 OAuth2TokenValidator<Jwt> withAudience = new AudienceClaimValidator(
                                 authorizationService.getAuthorizedAudience());
                 OAuth2TokenValidator<Jwt> withSubject = new SubjectClaimValidator(authorizationService);

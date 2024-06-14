@@ -32,14 +32,42 @@ import com.unitvectory.devicekeyregistry.service.AuthorizationServiceImpl;
 @Configuration
 public class AuthorizationConfig {
 
+    /**
+     * URL for validating their JWT signature
+     */
+    @Value("${devicekeyregistry.authorized.jwks:https://www.googleapis.com/oauth2/v3/certs}")
+    private String jwks;
+
+    /**
+     * Issuer claim must match
+     */
+    @Value("${devicekeyregistry.authorized.issuer:https://accounts.google.com}")
+    private String issuer;
+
+    /**
+     * The audience claim must match
+     */
     @Value("${devicekeyregistry.authorized.audience}")
     private String authorizedAudience;
 
+    /**
+     * The subject claim must be one of
+     */
     @Value("#{'${devicekeyregistry.authorized.subjects}'.split(',')}")
     private List<String> authorizedSubjects;
 
     @Bean
     public AuthorizationService authorizationService() {
         return new AuthorizationServiceImpl(authorizedAudience, authorizedSubjects);
+    }
+
+    @Bean
+    public String authorizedJwks() {
+        return this.jwks;
+    }
+
+    @Bean
+    public String authorizedIssuer(){
+        return this.issuer;
     }
 }
