@@ -14,6 +14,10 @@ updates:
       time: "06:00"
       timezone: "America/New_York"
     open-pull-requests-limit: 20
+    # Spring Cloud GCP 8.x brings incompatible Boot 4 auto-configuration.
+    ignore:
+      - dependency-name: "com.google.cloud:spring-cloud-gcp-dependencies"
+        versions: ["8.x"]
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
